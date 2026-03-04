@@ -1,6 +1,6 @@
+import Tab from '@/components/ui/tabs'
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import Tab from '../ui/tabs'
 
 const TABS = ['All', 'Active', 'Completed']
 

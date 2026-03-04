@@ -4,8 +4,7 @@ import AppTextInput from '@/components/ui/input/filled'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, { useState } from 'react'
-import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 const LoginScreen = () => {
   const [form, setForm] = useState({
@@ -24,9 +23,7 @@ const LoginScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar />
-
+    <>
       {/* Enhanced Header */}
       <LinearGradient
         colors={['#1C339A', '#2947C7', '#3B5CD9']}
@@ -100,14 +97,16 @@ const LoginScreen = () => {
           {/* Create account */}
           <AppButton
             title="Create an account"
-            variant="secondary"
+            textColor="#000000"
+            gradientColors={['#F1F5F9', '#F1F5F9']}
             onPress={() => console.log('Create account')}
           />
 
           {/* Apple */}
           <AppButton
             title="Sign in with Apple"
-            variant="secondary"
+            textColor="#000000"
+            gradientColors={['#F1F5F9', '#F1F5F9']}
             icon={<Ionicons name="logo-apple" size={20} color="#000" style={styles.socialIcon} />}
             onPress={() => console.log('Apple sign-in')}
           />
@@ -115,7 +114,8 @@ const LoginScreen = () => {
           {/* Google */}
           <AppButton
             title="Sign in with Google"
-            variant="secondary"
+            textColor="#000000"
+            gradientColors={['#F1F5F9', '#F1F5F9']}
             icon={
               <Ionicons name="logo-google" size={20} color="#1C339A" style={styles.socialIcon} />
             }
@@ -130,17 +130,13 @@ const LoginScreen = () => {
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </>
   )
 }
 
 export default LoginScreen
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-  },
   header: {
     paddingTop: 20,
     paddingBottom: 40,
@@ -217,7 +213,6 @@ const styles = StyleSheet.create({
     left: -20,
   },
   content: {
-    paddingHorizontal: 24,
     paddingTop: 32,
   },
   eyeIcon: {

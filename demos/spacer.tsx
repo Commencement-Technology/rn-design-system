@@ -1,6 +1,6 @@
+import Spacer from '@/components/ui/spacer'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import Spacer from '../ui/spacer'
 
 export default function SpacerDemo() {
   return (

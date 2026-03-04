@@ -1,13 +1,10 @@
-import AppBar from '@/components/ui/app-bar'
 import Text from '@/components/ui/text'
 import React from 'react'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
 
 export default function TextDemoScreen() {
   return (
-    <View style={styles.container}>
-      <AppBar title="Typography System" showBackButton={true} subtitle="Design System Components" />
-
+    <>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <View style={styles.section}>
@@ -415,15 +412,11 @@ export default function TextDemoScreen() {
           <View style={{ height: 40 }} />
         </View>
       </ScrollView>
-    </View>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
   scrollView: {
     flex: 1,
     backgroundColor: '#f8fafc',
@@ -431,7 +424,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-
   statsRow: {
     flexDirection: 'row',
     gap: 12,
@@ -440,15 +432,11 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     backgroundColor: '#f8fafc',
-    padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
-  section: {
-    paddingHorizontal: 20,
-    marginTop: 32,
-  },
+  section: {},
   sectionTitle: {
     marginBottom: 16,
   },

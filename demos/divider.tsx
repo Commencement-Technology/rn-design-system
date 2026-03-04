@@ -1,6 +1,6 @@
+import Divider from '@/components/ui/divider'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import Divider from '../ui/divider'
 
 export default function DividerDemo() {
   return (

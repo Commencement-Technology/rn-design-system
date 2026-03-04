@@ -1,7 +1,7 @@
+import Input from '@/components/ui/input/outlined'
+import Spacer from '@/components/ui/spacer'
 import React, { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Input from '../ui/input/outlined'
-import Spacer from '../ui/spacer'
 
 const InputDemo = () => {
   const [email, setEmail] = useState('')

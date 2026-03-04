@@ -1,6 +1,6 @@
+import Badge from '@/components/ui/badge'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import Badge from '../ui/badge'
 
 export default function BadgeDemo() {
   return (

@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 // Design tokens for light mode
 const COLORS = {
@@ -18,7 +17,7 @@ const COLORS = {
 } as const
 
 const SPACING = {
-  horizontal: 20,
+  horizontal: 15,
   vertical: 16,
   backButtonMargin: 12,
 } as const
@@ -54,7 +53,6 @@ const AppBar = ({
   subtitle,
 }: AppBarProps) => {
   const router = useRouter()
-  const insets = useSafeAreaInsets()
 
   const handleBack = () => {
     if (onBackPress) {
@@ -67,7 +65,7 @@ const AppBar = ({
   const BACK_BUTTON_WIDTH = SIZES.backButtonSize + SPACING.backButtonMargin
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + SPACING.vertical }, containerStyle]}>
+    <View style={[styles.header, containerStyle]}>
       {/* Left Section - Back Button or Spacer */}
       {showBackButton ? (
         <Pressable

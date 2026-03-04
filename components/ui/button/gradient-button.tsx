@@ -1,23 +1,30 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import React, { ReactNode } from 'react'
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
+import { ColorValue, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
+
+type GradientTuple = readonly [ColorValue, ColorValue, ...ColorValue[]]
 
 type AppButtonProps = {
   title: string
   onPress: () => void
-  variant?: 'primary' | 'secondary'
   icon?: ReactNode
   style?: ViewStyle
   disabled?: boolean
+  gradientColors?: GradientTuple
+  textColor?: ColorValue
 }
+
+const DEFAULT_GRADIENT: GradientTuple = ['#1C339A', '#2947C7']
+const DEFAULT_TEXT_COLOR: ColorValue = '#FFFFFF'
 
 const AppButton = ({
   title,
   onPress,
-  variant = 'primary',
   icon,
   style,
   disabled = false,
+  gradientColors = DEFAULT_GRADIENT,
+  textColor = DEFAULT_TEXT_COLOR,
 }: AppButtonProps) => {
   return (
     <Pressable
@@ -25,23 +32,19 @@ const AppButton = ({
       disabled={disabled}
       style={({ pressed }) => [
         styles.base,
-        pressed && styles.pressed,
+        pressed && !disabled && styles.pressed,
         disabled && styles.disabled,
         style,
       ]}
     >
       <LinearGradient
-        colors={variant === 'primary' ? ['#1C339A', '#2947C7'] : ['#F1F5F9', '#F1F5F9']}
+        colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.gradient, variant === 'primary' ? styles.primary : styles.secondary]}
+        style={styles.gradient}
       >
         {icon && <View style={styles.iconContainer}>{icon}</View>}
-        <Text
-          style={[styles.text, variant === 'primary' ? styles.primaryText : styles.secondaryText]}
-        >
-          {title}
-        </Text>
+        <Text style={[styles.text, { color: textColor }]}>{title}</Text>
       </LinearGradient>
     </Pressable>
   )
@@ -51,8 +54,8 @@ export default AppButton
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12,
-    marginBottom: 12,
+    borderRadius: 14,
+    marginBottom: 16,
     overflow: 'hidden',
   },
   gradient: {
@@ -61,19 +64,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-  },
-  primary: {
-    shadowColor: '#1C339A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
-  secondary: {
-    borderColor: '#E2E8F0',
-  },
   pressed: {
-    opacity: 0.85,
+    opacity: 0.92,
     transform: [{ scale: 0.98 }],
   },
   disabled: {
@@ -85,11 +84,5 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: '600',
-  },
-  primaryText: {
-    color: '#fff',
-  },
-  secondaryText: {
-    color: '#334155',
   },
 })

@@ -2,7 +2,6 @@ import Card from '@/components/ui/card/card'
 import { Ionicons } from '@expo/vector-icons'
 import React from 'react'
 import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 const { width } = Dimensions.get('window')
 const HORIZONTAL_PADDING = 16
@@ -98,11 +97,8 @@ const CoffeeShopScreen = () => {
   )
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: HORIZONTAL_PADDING }}
-        showsVerticalScrollIndicator={false}
-      >
+    <>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>Good Morning ☕</Text>
@@ -158,17 +154,13 @@ const CoffeeShopScreen = () => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </>
   )
 }
 
 export default CoffeeShopScreen
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
   header: {
     paddingTop: 20,
     paddingBottom: 20,
