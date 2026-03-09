@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons'
 import React, { useCallback, useEffect, useRef } from 'react'
 import {
   Animated,
@@ -5,65 +6,61 @@ import {
   Modal,
   PanResponder,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View,
   ViewStyle,
 } from 'react-native'
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window')
+
+export type BottomSheetHeight = 'sm' | 'md' | 'lg' | 'full' | number
+
+const HEIGHT_MAP: Record<Exclude<BottomSheetHeight, number>, number> = {
+  sm: SCREEN_HEIGHT * 0.38,
+  md: SCREEN_HEIGHT * 0.55,
+  lg: SCREEN_HEIGHT * 0.75,
+  full: SCREEN_HEIGHT * 0.92,
+}
+
+const DRAG_CLOSE_THRESHOLD = 100
+const DRAG_CLOSE_VELOCITY = 0.5
 
 interface BottomSheetProps {
   visible: boolean
   onClose: () => void
   title?: string
-  subtitle?: string
-  children: React.ReactNode
-  snapPoints?: ('25%' | '50%' | '75%' | '90%')[]
-  showHandle?: boolean
+  height?: BottomSheetHeight
   showCloseButton?: boolean
+  showHandle?: boolean
+  children?: React.ReactNode
   contentStyle?: ViewStyle
 }
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const DRAG_THRESHOLD = 80
-const ANIMATION_CONFIG = { tension: 65, friction: 11, useNativeDriver: true }
-
-const COLORS = {
-  bg: '#FFFFFF',
-  overlay: 'rgba(15,23,42,0.5)',
-  handle: '#CBD5E1',
-  title: '#0F172A',
-  subtitle: '#64748B',
-  border: '#F1F5F9',
-  closeIcon: '#94A3B8',
-  closeIconBg: '#F8FAFC',
-}
-
-export const BottomSheet: React.FC<BottomSheetProps> = ({
+export default function BottomSheet({
   visible,
   onClose,
   title,
-  subtitle,
-  children,
-  snapPoints = ['50%'],
-  showHandle = true,
+  height = 'md',
   showCloseButton = true,
+  showHandle = true,
+  children,
   contentStyle,
-}) => {
-  const snapHeight = SCREEN_HEIGHT * (parseInt(snapPoints[0]) / 100)
+}: BottomSheetProps) {
+  const sheetHeight = typeof height === 'number' ? height : HEIGHT_MAP[height]
 
-  const translateY = useRef(new Animated.Value(snapHeight)).current
+  const translateY = useRef(new Animated.Value(sheetHeight)).current
   const overlayOpacity = useRef(new Animated.Value(0)).current
-  const dragY = useRef(new Animated.Value(0)).current
-
-  // ── Open / Close animations ────────
+  const lastGestureY = useRef(0)
 
   const open = useCallback(() => {
-    translateY.setValue(snapHeight)
     Animated.parallel([
       Animated.spring(translateY, {
         toValue: 0,
-        ...ANIMATION_CONFIG,
+        useNativeDriver: true,
+        tension: 65,
+        friction: 11,
       }),
       Animated.timing(overlayOpacity, {
         toValue: 1,
@@ -71,42 +68,63 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
         useNativeDriver: true,
       }),
     ]).start()
-  }, [snapHeight])
+  }, [translateY, overlayOpacity])
 
   const close = useCallback(() => {
     Animated.parallel([
-      Animated.spring(translateY, {
-        toValue: snapHeight,
-        ...ANIMATION_CONFIG,
+      Animated.timing(translateY, {
+        toValue: sheetHeight,
+        duration: 280,
+        useNativeDriver: true,
       }),
       Animated.timing(overlayOpacity, {
         toValue: 0,
-        duration: 220,
+        duration: 260,
         useNativeDriver: true,
       }),
     ]).start(() => onClose())
-  }, [snapHeight, onClose])
+  }, [translateY, overlayOpacity, sheetHeight, onClose])
 
   useEffect(() => {
-    if (visible) open()
-  }, [visible, open])
+    if (visible) {
+      translateY.setValue(sheetHeight)
+      overlayOpacity.setValue(0)
+      open()
+    }
+  }, [visible])
 
-  // ── Pan Responder for drag-to-dismiss ──────────
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_, { dy }) => Math.abs(dy) > 5,
-      onPanResponderMove: (_, { dy }) => {
-        if (dy > 0) translateY.setValue(dy)
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dy) > 5,
+      onPanResponderGrant: () => {
+        lastGestureY.current = 0
       },
-      onPanResponderRelease: (_, { dy, vy }) => {
-        if (dy > DRAG_THRESHOLD || vy > 0.5) {
+      onPanResponderMove: (_, g) => {
+        const dy = Math.max(0, g.dy) // only allow dragging down
+        translateY.setValue(dy)
+        const progress = Math.max(0, 1 - dy / sheetHeight)
+        overlayOpacity.setValue(progress)
+        lastGestureY.current = g.dy
+      },
+      onPanResponderRelease: (_, g) => {
+        const shouldClose = g.dy > DRAG_CLOSE_THRESHOLD || g.vy > DRAG_CLOSE_VELOCITY
+        if (shouldClose) {
           close()
         } else {
-          Animated.spring(translateY, {
-            toValue: 0,
-            ...ANIMATION_CONFIG,
-          }).start()
+          Animated.parallel([
+            Animated.spring(translateY, {
+              toValue: 0,
+              useNativeDriver: true,
+              tension: 65,
+              friction: 11,
+            }),
+            Animated.timing(overlayOpacity, {
+              toValue: 1,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start()
         }
       },
     }),
@@ -115,66 +133,44 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   if (!visible) return null
 
   return (
-    <Modal
-      transparent
-      visible={visible}
-      animationType="none"
-      statusBarTranslucent
-      onRequestClose={close}
-    >
+    <Modal transparent visible={visible} animationType="none" onRequestClose={close}>
       {/* Overlay */}
-      <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={close} />
-      </Animated.View>
+      <TouchableWithoutFeedback onPress={close}>
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+      </TouchableWithoutFeedback>
 
       {/* Sheet */}
-      <Animated.View
-        style={[
-          styles.sheet,
-          {
-            height: snapHeight,
-            transform: [{ translateY }],
-          },
-        ]}
-      >
-        {/* Drag handle */}
-        {showHandle && (
-          <View style={styles.handleContainer} {...panResponder.panHandlers}>
-            <View style={styles.handle} />
-          </View>
-        )}
-
-        {/* Header */}
-        {(title || showCloseButton) && (
-          <View style={styles.header}>
-            <View style={styles.headerText}>
-              {title && <Text style={styles.title}>{title}</Text>}
-              {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+      <Animated.View style={[styles.sheet, { height: sheetHeight, transform: [{ translateY }] }]}>
+        {/* Drag area — handle + header row together */}
+        <View {...panResponder.panHandlers} style={styles.dragArea}>
+          {showHandle && (
+            <View style={styles.handleContainer}>
+              <View style={styles.handle} />
             </View>
-            {showCloseButton && (
-              <Pressable
-                style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
-                onPress={close}
-                hitSlop={8}
-              >
-                <Text style={styles.closeX}>✕</Text>
-              </Pressable>
-            )}
-          </View>
-        )}
+          )}
 
-        {/* Divider */}
-        {title && <View style={styles.divider} />}
+          {(title || showCloseButton) && (
+            <View style={styles.header}>
+              <Text style={styles.title} numberOfLines={1}>
+                {title ?? ''}
+              </Text>
+              {showCloseButton && (
+                <Pressable
+                  onPress={close}
+                  style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close"
+                >
+                  <Ionicons name="close" size={18} color="#64748B" />
+                </Pressable>
+              )}
+            </View>
+          )}
+        </View>
 
         {/* Content */}
-        <ScrollView
-          style={[styles.content, contentStyle]}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-          contentContainerStyle={{ paddingBottom: 32 }}
-        >
-          {children}
-        </ScrollView>
+        <View style={[styles.content, contentStyle]}>{children}</View>
       </Animated.View>
     </Modal>
   )
@@ -183,83 +179,65 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.overlay,
+    backgroundColor: 'rgba(15, 23, 42, 0.45)',
   },
   sheet: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: COLORS.bg,
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    shadowColor: '#000',
+    shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 24,
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 16,
+  },
+  dragArea: {
+    paddingBottom: 4,
   },
   handleContainer: {
-    paddingVertical: 12,
     alignItems: 'center',
+    paddingTop: 12,
+    paddingBottom: 4,
   },
   handle: {
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: COLORS.handle,
+    backgroundColor: '#E2E8F0',
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-  },
-  headerText: {
-    flex: 1,
-    gap: 2,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    color: COLORS.title,
+    color: '#0F172A',
     letterSpacing: -0.3,
-  },
-  subtitle: {
-    fontSize: 13,
-    fontWeight: '400',
-    color: COLORS.subtitle,
-    marginTop: 2,
+    flex: 1,
   },
   closeBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: COLORS.closeIconBg,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 12,
-    marginTop: 2,
   },
   closeBtnPressed: {
-    opacity: 0.6,
-    transform: [{ scale: 0.93 }],
-  },
-  closeX: {
-    fontSize: 12,
-    color: COLORS.closeIcon,
-    fontWeight: '600',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.border,
-    marginHorizontal: 24,
-    marginBottom: 4,
+    backgroundColor: '#E2E8F0',
+    transform: [{ scale: 0.94 }],
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
   },
 })

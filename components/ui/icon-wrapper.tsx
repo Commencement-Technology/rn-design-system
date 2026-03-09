@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import React from 'react'
-import { StyleSheet, View, ViewStyle } from 'react-native'
+import { Animated, Pressable, StyleSheet, View, ViewStyle } from 'react-native'
 
 export type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
 export type IconVariant = 'default' | 'filled' | 'outlined' | 'ghost'
@@ -13,6 +13,7 @@ interface IconWrapperProps {
   backgroundColor?: string
   variant?: IconVariant
   borderRadius?: number
+  onPress?: () => void
   style?: ViewStyle
 }
 
@@ -25,15 +26,15 @@ const SIZE_MAP: Record<IconSize, { container: number; icon: number }> = {
 }
 
 const ICON_COLOR: Record<IconVariant, string> = {
-  default: '#6366F1',
+  default: '#319795',
   filled: '#FFFFFF',
-  outlined: '#6366F1',
-  ghost: '#6366F1',
+  outlined: '#319795',
+  ghost: '#319795',
 }
 
 const BG_COLOR: Record<IconVariant, string> = {
   default: '#EEF2FF',
-  filled: '#6366F1',
+  filled: '#319795',
   outlined: '#FFFFFF',
   ghost: 'transparent',
 }
@@ -45,6 +46,7 @@ export default function IconWrapper({
   backgroundColor,
   variant = 'default',
   borderRadius,
+  onPress,
   style,
 }: IconWrapperProps) {
   const { container, icon } = SIZE_MAP[size]
@@ -52,8 +54,27 @@ export default function IconWrapper({
   const resolvedColor = color ?? ICON_COLOR[variant]
   const resolvedBg = backgroundColor ?? BG_COLOR[variant]
   const isOutlined = variant === 'outlined'
+  const pressScale = React.useRef(new Animated.Value(1)).current
 
-  return (
+  const handlePressIn = () => {
+    Animated.spring(pressScale, {
+      toValue: 0.88,
+      useNativeDriver: true,
+      tension: 200,
+      friction: 10,
+    }).start()
+  }
+
+  const handlePressOut = () => {
+    Animated.spring(pressScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 200,
+      friction: 10,
+    }).start()
+  }
+
+  const inner = (
     <View
       style={[
         styles.wrapper,
@@ -63,13 +84,27 @@ export default function IconWrapper({
           borderRadius: br,
           backgroundColor: resolvedBg,
           borderWidth: isOutlined ? 1.5 : 0,
-          borderColor: isOutlined ? '#C7D2FE' : 'transparent',
+          borderColor: isOutlined ? '#A9D1C9' : 'transparent',
         } as ViewStyle,
-        style,
+        !onPress && style,
       ]}
     >
       <Ionicons name={name} size={icon} color={resolvedColor} />
     </View>
+  )
+
+  if (!onPress) return inner
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      accessibilityRole="button"
+      hitSlop={6}
+    >
+      <Animated.View style={[{ transform: [{ scale: pressScale }] }, style]}>{inner}</Animated.View>
+    </Pressable>
   )
 }
 

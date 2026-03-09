@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import {
   ActivityIndicator,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   TextStyle,
@@ -18,7 +19,7 @@ interface ButtonProps {
   disabled?: boolean
   loading?: boolean
   variant?: ButtonVariant
-  style?: ViewStyle
+  style?: StyleProp<ViewStyle>
 }
 
 const BASE_STYLES = {

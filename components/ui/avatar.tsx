@@ -3,15 +3,12 @@ import { Animated, Image, Pressable, StyleSheet, Text, View, ViewStyle } from 'r
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 export type AvatarVariant = 'circle' | 'rounded' | 'square'
-export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy'
 
 interface AvatarProps {
   uri?: string
   name?: string
   size?: AvatarSize
   variant?: AvatarVariant
-  status?: AvatarStatus
-  badge?: number
   onPress?: () => void
   style?: ViewStyle
 }
@@ -26,20 +23,11 @@ const SIZE_MAP: Record<AvatarSize, number> = {
 }
 
 const FONT_RATIO = 0.36
-const STATUS_RATIO = 0.28
-const BADGE_RATIO = 0.36
 
 const RADIUS_MAP: Record<AvatarVariant, (size: number) => number> = {
   circle: (s) => s / 2,
   rounded: (s) => s / 4,
   square: () => 0,
-}
-
-const STATUS_COLORS: Record<AvatarStatus, string> = {
-  online: '#22C55E',
-  offline: '#94A3B8',
-  away: '#F59E0B',
-  busy: '#EF4444',
 }
 
 const PALETTE = [
@@ -67,13 +55,11 @@ function getColor(name: string) {
   return PALETTE[Math.abs(hash) % PALETTE.length]
 }
 
-export const Avatar: React.FC<AvatarProps> = ({
+const Avatar: React.FC<AvatarProps> = ({
   uri,
   name = '',
   size = 'md',
   variant = 'circle',
-  status,
-  badge,
   onPress,
   style,
 }) => {
@@ -128,41 +114,6 @@ export const Avatar: React.FC<AvatarProps> = ({
       ) : (
         <Text style={[styles.initials, { fontSize, color: textColor }]}>{initials}</Text>
       )}
-
-      {status && (
-        <View
-          style={[
-            styles.status,
-            {
-              width: Math.round(dim * STATUS_RATIO),
-              height: Math.round(dim * STATUS_RATIO),
-              borderRadius: Math.round(dim * STATUS_RATIO) / 2,
-              backgroundColor: STATUS_COLORS[status],
-              bottom: variant === 'circle' ? 0 : -2,
-              right: variant === 'circle' ? 0 : -2,
-            },
-          ]}
-        />
-      )}
-
-      {badge !== undefined && badge > 0 && (
-        <View
-          style={[
-            styles.badge,
-            {
-              minWidth: Math.round(dim * BADGE_RATIO),
-              height: Math.round(dim * BADGE_RATIO),
-              borderRadius: Math.round(dim * BADGE_RATIO) / 2,
-              top: -2,
-              right: -2,
-            },
-          ]}
-        >
-          <Text style={[styles.badgeText, { fontSize: Math.round(dim * BADGE_RATIO * 0.55) }]}>
-            {badge > 99 ? '99+' : badge}
-          </Text>
-        </View>
-      )}
     </View>
   )
 
@@ -175,11 +126,13 @@ export const Avatar: React.FC<AvatarProps> = ({
   )
 }
 
+export default Avatar
+
 const styles = StyleSheet.create({
   avatar: {
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
@@ -188,23 +141,5 @@ const styles = StyleSheet.create({
   initials: {
     fontWeight: '700',
     letterSpacing: 0.5,
-  },
-  status: {
-    position: 'absolute',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  badge: {
-    position: 'absolute',
-    backgroundColor: '#EF4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 3,
-    borderWidth: 1.5,
-    borderColor: '#FFFFFF',
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
   },
 })

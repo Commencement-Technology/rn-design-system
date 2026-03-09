@@ -1,94 +1,59 @@
 import EmptyState from '@/components/ui/empty-state'
+import { Ionicons } from '@expo/vector-icons'
 import React from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 
-export default function EmptyStateDemo() {
+const demoData = [
+  {
+    id: 'search',
+    title: 'No results found',
+    description: 'We couldn’t find anything matching your search. Try using different keywords.',
+    icon: <Ionicons name="search-outline" size={26} color="#64748B" />,
+  },
+  {
+    id: 'cart',
+    title: 'Your cart is empty',
+    description: 'Looks like you haven’t added anything yet.',
+    ctaLabel: 'Shop now',
+    icon: <Ionicons name="cart-outline" size={26} color="#64748B" />,
+    onPress: () => Alert.alert('Go to shop'),
+  },
+]
+
+const EmptyStateDemo = () => {
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Empty State</Text>
-      <Text style={styles.description}>Fade + spring entrance animation</Text>
+    <View style={styles.container}>
+      {demoData.map((item) => (
+        <View key={item.id} style={styles.section}>
+          <Text style={styles.sectionTitle}>{item.title}</Text>
 
-      <View style={styles.card}>
-        <EmptyState
-          icon="search-outline"
-          title="No results found"
-          description="We couldn't find anything matching your search. Try using different keywords or filters."
-          cta={{ label: 'Clear search', onPress: () => {} }}
-          secondaryCta={{ label: 'Browse all', onPress: () => {} }}
-        />
-      </View>
-
-      <View style={styles.card}>
-        <EmptyState
-          icon="mail-outline"
-          title="Your inbox is empty"
-          description="When you receive messages, they'll appear here. Start a conversation to get things going."
-          cta={{ label: 'New message', onPress: () => {} }}
-        />
-      </View>
-
-      <View style={styles.card}>
-        <EmptyState
-          icon="notifications-outline"
-          title="All caught up!"
-          description="You have no new notifications. We'll let you know when something comes in."
-        />
-      </View>
-
-      <View style={styles.card}>
-        <EmptyState
-          illustration={
-            <View style={styles.emoji}>
-              <Text style={styles.emojiText}>📦</Text>
-            </View>
-          }
-          title="Nothing in your cart"
-          description="Looks like you haven't added anything yet. Explore our catalog and find something you love."
-          cta={{ label: 'Start shopping', onPress: () => {} }}
-        />
-      </View>
-    </ScrollView>
+          <EmptyState
+            icon={item.icon}
+            title={item.title}
+            description={item.description}
+            ctaLabel={item.ctaLabel}
+            onCtaPress={item.onPress}
+          />
+        </View>
+      ))}
+    </View>
   )
 }
 
+export default EmptyStateDemo
+
 const styles = StyleSheet.create({
   container: {
+    padding: 20,
+    gap: 40,
+  },
+
+  section: {
     gap: 16,
   },
-  heading: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#0F172A',
-    letterSpacing: -0.5,
-    marginBottom: 4,
-    paddingHorizontal: 8,
-  },
-  description: {
-    fontSize: 14,
-    color: '#64748B',
-    marginBottom: 8,
-    paddingHorizontal: 8,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 2,
-    overflow: 'hidden',
-  },
-  emoji: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: '#FFF7ED',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 28,
-  },
-  emojiText: {
-    fontSize: 44,
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 })

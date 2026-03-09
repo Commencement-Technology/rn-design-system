@@ -1,16 +1,13 @@
 import React from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Avatar } from '../components/ui/avatar'
+import Avatar from '../components/ui/avatar'
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 type AvatarVariant = 'circle' | 'rounded' | 'square'
-type AvatarStatus = 'online' | 'offline' | 'away' | 'busy'
 
 const USERS = [
   { name: 'Alice Johnson', uri: 'https://i.pravatar.cc/150?img=3' },
   { name: 'Bob Smith', uri: undefined },
-  { name: 'Carol White', uri: 'https://i.pravatar.cc/150?img=4' },
-  { name: 'David Lee', uri: undefined },
 ]
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -60,40 +57,11 @@ export default function AvatarDemo() {
         </View>
       </Section>
 
-      <Section title="Status Indicators">
-        <View style={styles.row}>
-          {(['online', 'offline', 'away', 'busy'] as AvatarStatus[]).map((s) => (
-            <View key={s} style={styles.cell}>
-              <Avatar name="Jo Kim" size="lg" status={s} />
-              <Text style={styles.cellLabel}>{s}</Text>
-            </View>
-          ))}
-        </View>
-      </Section>
-
-      <Section title="Notification Badges">
-        <View style={styles.row}>
-          {[1, 5, 12, 100].map((b) => (
-            <View key={b} style={styles.cell}>
-              <Avatar name="Max Liu" size="lg" badge={b} />
-              <Text style={styles.cellLabel}>{b}</Text>
-            </View>
-          ))}
-        </View>
-      </Section>
-
       <Section title="Pressable — tap to see scale">
         <View style={styles.row}>
           {USERS.map((u) => (
             <View key={u.name} style={styles.cell}>
-              <Avatar
-                name={u.name}
-                uri={u.uri}
-                size="xl"
-                status="online"
-                badge={3}
-                onPress={() => {}}
-              />
+              <Avatar name={u.name} uri={u.uri} size="xl" onPress={() => {}} />
               <Text style={styles.cellLabel}>{u.name.split(' ')[0]}</Text>
             </View>
           ))}
