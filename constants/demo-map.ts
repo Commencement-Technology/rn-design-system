@@ -10,7 +10,10 @@ import FilterTabsDemo from '@/demos/filter-tab'
 import GradientButtonDemo from '@/demos/gradient-button'
 import IconWrapperDemo from '@/demos/icon-wrapper'
 import InputDemo from '@/demos/input'
+import ModalDemo from '@/demos/modal'
+import SkeletonDemo from '@/demos/skeleton'
 import SpacerDemo from '@/demos/spacer'
+import ToastDemo from '@/demos/toast'
 import TypographyScreen from '@/demos/typography-system'
 import LoginScreen from '@/screens/login/login-screen'
 import SearchDemoScreen from '@/screens/search-demo-screen'
@@ -33,4 +36,7 @@ export const DEMO_MAP: Record<string, ComponentType> = {
   text: TypographyScreen,
   'app-bar': AppBarDemo,
   'search-bar': SearchDemoScreen,
+  toast: ToastDemo,
+  skeleton: SkeletonDemo,
+  modal: ModalDemo,
 }

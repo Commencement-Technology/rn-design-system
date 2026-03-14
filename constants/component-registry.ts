@@ -129,6 +129,27 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
     category: 'Feedback',
     icon: 'file-tray-outline',
   },
+  {
+    id: 'toast',
+    title: 'Toast',
+    description: 'Auto-dismissing notification for action feedback',
+    category: 'Feedback',
+    icon: 'notifications-outline',
+  },
+  {
+    id: 'skeleton',
+    title: 'Skeleton Loader',
+    description: 'Animated placeholder while content is loading',
+    category: 'Feedback',
+    icon: 'image-outline',
+  },
+  {
+    id: 'modal',
+    title: 'Modal / Dialog',
+    description: 'Overlay for confirmations, alerts and sheets',
+    category: 'Feedback',
+    icon: 'albums-outline',
+  },
 
   // Typography
   {
