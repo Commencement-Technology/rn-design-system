@@ -14,6 +14,7 @@ import ModalDemo from '@/demos/modal'
 import SkeletonDemo from '@/demos/skeleton'
 import SpacerDemo from '@/demos/spacer'
 import ToastDemo from '@/demos/toast'
+import ToggleDemo from '@/demos/toggle'
 import TypographyScreen from '@/demos/typography-system'
 import LoginScreen from '@/screens/login/login-screen'
 import SearchDemoScreen from '@/screens/search-demo-screen'
@@ -39,4 +40,5 @@ export const DEMO_MAP: Record<string, ComponentType> = {
   toast: ToastDemo,
   skeleton: SkeletonDemo,
   modal: ModalDemo,
+  toggle: ToggleDemo,
 }

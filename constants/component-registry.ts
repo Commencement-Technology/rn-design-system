@@ -81,6 +81,13 @@ export const COMPONENT_REGISTRY: ComponentMeta[] = [
     category: 'Forms',
     icon: 'search-outline',
   },
+  {
+    id: 'toggle',
+    title: 'Toggle',
+    description: 'Animated on/off switch for settings and preferences',
+    category: 'Forms',
+    icon: 'toggle-outline',
+  },
 
   // Layout
   {
